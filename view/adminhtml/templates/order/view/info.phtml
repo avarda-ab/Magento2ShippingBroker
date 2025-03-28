@@ -1,0 +1,77 @@
+<?php
+
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+/**
+ * @var $block \Magento\Sales\Block\Adminhtml\Order\AbstractOrder
+ * @var \Magento\Framework\View\Helper\SecureHtmlRenderer $secureRenderer
+ * @var \Magento\Framework\Escaper $escaper
+ */
+
+/** @var \Magento\Shipping\Helper\Data $shippingHelper */
+$shippingHelper = $block->getData('shippingHelper');
+
+/** @var \Magento\Tax\Helper\Data $taxHelper */
+$taxHelper = $block->getData('taxHelper');
+?>
+<?php $order = $block->getOrder() ?>
+<?php if ($order->getIsVirtual()):
+    return '';
+endif; ?>
+<?php $shippingMethodDetails = $shippingHelper->getShippingRateDetails($order); ?>
+<?php /* Shipping Method */ ?>
+<div class="admin__page-section-item order-shipping-method">
+    <div class="admin__page-section-item-title">
+        <span class="title"><?= $escaper->escapeHtml(__('Shipping &amp; Handling Information')) ?></span>
+    </div>
+    <div class="admin__page-section-item-content">
+        <?php  if ($order->getTracksCollection()->count()): ?>
+            <p>
+                <a href="#" id="linkId" title="<?= $escaper->escapeHtmlAttr(__('Track Order')) ?>">
+                    <?= $escaper->escapeHtml(__('Track Order')) ?>
+                </a>
+            </p>
+            <?= /* @noEscape */ $secureRenderer->renderEventListenerAsTag(
+                'onclick',
+                "popWin('" . $escaper->escapeJs($shippingHelper->getTrackingPopupUrlBySalesModel($order)) .
+                "','trackorder','width=800,height=600,resizable=yes,scrollbars=yes')",
+                'a#linkId'
+            ) ?>
+        <?php endif; ?>
+        <?php if ($order->getShippingDescription()): ?>
+            <strong><?= $escaper->escapeHtml($order->getShippingDescription()) ?></strong>
+
+            <?php if ($taxHelper->displayShippingPriceIncludingTax()): ?>
+                <?php $_excl = $block->displayShippingPriceInclTax($order); ?>
+            <?php else: ?>
+                <?php $_excl = $block->displayPriceAttribute('shipping_amount', false, ' '); ?>
+            <?php endif; ?>
+            <?php $_incl = $block->displayShippingPriceInclTax($order); ?>
+
+            <?= /** @noEscape */ $_excl ?>
+            <?php if ($taxHelper->displayShippingBothPrices() && $_incl != $_excl): ?>
+                (<?= $escaper->escapeHtml(__('Incl. Tax')) ?> <?= /** @noEscape */ $_incl ?>)
+            <?php endif; ?>
+        <?php else: ?>
+            <?= $escaper->escapeHtml(__('No shipping information available')) ?>
+        <?php endif; ?>
+    </div>
+    <?php if ($shippingMethodDetails): ?>
+        <div class="admin__page-section-shipping-details">
+            <div>
+                <br />
+                <strong><?= $escaper->escapeHtml(__('Pickup point details')) ?></strong>
+            </div>
+            <div>
+                <ul style="padding-left: 2rem; margin-top: 1rem;">
+                    <?php foreach ($shippingMethodDetails as $key => $value): ?>
+                        <?= "<li><strong>{$key}</strong>: {$value}</li>"; ?>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+        </div>
+    <?php endif; ?>
+</div>

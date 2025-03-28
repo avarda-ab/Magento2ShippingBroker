@@ -1,0 +1,27 @@
+{
+    "name": "avarda/gateway-shipping",
+    "version": "1.0.1",
+    "description": "Gateway shipping handling for Avarda Checkout3",
+    "type": "magento2-module",
+    "license": [
+        "Proprietary"
+    ],
+    "require": {
+        "avarda/checkout3": "*",
+        "magento/module-checkout": "*",
+        "magento/module-store": "*",
+        "magento/module-quote": "*",
+        "magento/module-catalog": "*",
+        "magento/module-sales": "*",
+        "magento/module-payment": "*",
+        "magento/module-shipping": "*"
+    },
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Avarda\\GatewayShipping\\": ""
+        }
+    }
+}
