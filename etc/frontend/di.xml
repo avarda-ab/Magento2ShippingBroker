@@ -7,6 +7,6 @@
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <type name="Magento\Framework\View\Element\Template">
-        <plugin name="Avarda_GatewayShipping::injectScript" type="Avarda\GatewayShipping\Plugin\Framework\View\Element\TemplatePlugin" />
+        <plugin name="Avarda_ShippingBroker::injectScript" type="Avarda\ShippingBroker\Plugin\Framework\View\Element\TemplatePlugin" />
     </type>
 </config>

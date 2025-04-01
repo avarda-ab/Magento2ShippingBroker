@@ -1,6 +1,6 @@
 /**
  * @copyright Copyright © Avarda. All rights reserved.
- * @package   Avarda_GatewayShipping
+ * @package   Avarda_ShippingBroker
  */
 define([], function () {
     'use strict';

@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace Avarda\GatewayShipping\Api\Gateway\Response;
+namespace Avarda\ShippingBroker\Api\Gateway\Response;
 
 interface ParserInterface
 {

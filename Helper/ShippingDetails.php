@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace Avarda\GatewayShipping\Helper;
+namespace Avarda\ShippingBroker\Helper;
 
 use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Helper\Context;
@@ -67,9 +67,9 @@ class ShippingDetails extends Data
         $address->collectShippingRates();
         $rates = $address->getGroupedAllShippingRates();
 
-        if (!empty($rates) && isset($rates['avarda_shipping_method_gateway'])) {
+        if (!empty($rates) && isset($rates['avarda_shipping_broker'])) {
             /** @var Rate $rate */
-            $rate = array_pop($rates['avarda_shipping_method_gateway']);
+            $rate = array_pop($rates['avarda_shipping_broker']);
             $details = json_decode($rate->getMethodDescription() ?? '', true);
             return $this->parseShippingRateDetails($details ?? []);
         }

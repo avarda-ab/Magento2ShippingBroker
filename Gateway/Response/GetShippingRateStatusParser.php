@@ -7,9 +7,9 @@
 
 declare(strict_types=1);
 
-namespace Avarda\GatewayShipping\Gateway\Response;
+namespace Avarda\ShippingBroker\Gateway\Response;
 
-use Avarda\GatewayShipping\Api\Gateway\Response\ParserInterface;
+use Avarda\ShippingBroker\Api\Gateway\Response\ParserInterface;
 
 /**
  * Parse Gateway response regarding shipping rates

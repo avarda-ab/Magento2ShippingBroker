@@ -12,8 +12,8 @@
                 <active>1</active>
                 <allowed_methods>delivery</allowed_methods>
                 <methods>delivery</methods>
-                <model>Avarda\GatewayShipping\Model\Carrier\Avarda</model>
-                <name>Shipping Method Gateway</name>
+                <model>Avarda\ShippingBroker\Model\Carrier\Avarda</model>
+                <name>Shipping Broker</name>
                 <title>Avarda</title>
             </avarda>
         </carriers>

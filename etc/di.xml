@@ -6,63 +6,63 @@
  */
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
-    <type name="Avarda\GatewayShipping\Model\Carrier\Avarda">
+    <type name="Avarda\ShippingBroker\Model\Carrier\Avarda">
         <arguments>
             <argument name="httpClient" xsi:type="object">AvardaCheckout3Client</argument>
             <argument name="transferFactory" xsi:type="object">AvardaCheckout3GetPaymentStatusTransferFactory</argument>
-            <argument name="parser" xsi:type="object">Avarda\GatewayShipping\Gateway\Response\GetShippingRateStatusParser</argument>
+            <argument name="parser" xsi:type="object">Avarda\ShippingBroker\Gateway\Response\GetShippingRateStatusParser</argument>
         </arguments>
     </type>
-    <type name="Avarda\GatewayShipping\Gateway\Request\ShippingSettingsDataBuilder">
+    <type name="Avarda\ShippingBroker\Gateway\Request\ShippingSettingsDataBuilder">
         <arguments>
             <argument name="customAttributesPool" xsi:type="array">
-                <item name="freeshipping" xsi:type="object">Avarda\GatewayShipping\Gateway\Request\CustomAttribute\Nshift\FreeshippingBuilder</item>
-                <item name="discount" xsi:type="object">Avarda\GatewayShipping\Gateway\Request\CustomAttribute\Nshift\DiscountBuilder</item>
-                <item name="weight" xsi:type="object">Avarda\GatewayShipping\Gateway\Request\CustomAttribute\Nshift\WeightBuilder</item>
+                <item name="freeshipping" xsi:type="object">Avarda\ShippingBroker\Gateway\Request\CustomAttribute\Nshift\FreeshippingBuilder</item>
+                <item name="discount" xsi:type="object">Avarda\ShippingBroker\Gateway\Request\CustomAttribute\Nshift\DiscountBuilder</item>
+                <item name="weight" xsi:type="object">Avarda\ShippingBroker\Gateway\Request\CustomAttribute\Nshift\WeightBuilder</item>
             </argument>
         </arguments>
     </type>
     <virtualType name="AvardaCheckout3UpdateItemsRequest">
         <arguments>
             <argument name="builders" xsi:type="array">
-                <item name="shippingSettings" xsi:type="string">Avarda\GatewayShipping\Gateway\Request\ShippingSettingsDataBuilder</item>
+                <item name="shippingSettings" xsi:type="string">Avarda\ShippingBroker\Gateway\Request\ShippingSettingsDataBuilder</item>
             </argument>
         </arguments>
     </virtualType>
     <virtualType name="AvardaCheckout3InitializePaymentRequest">
         <arguments>
             <argument name="builders" xsi:type="array">
-                <item name="shippingSettings" xsi:type="string">Avarda\GatewayShipping\Gateway\Request\ShippingSettingsDataBuilder</item>
+                <item name="shippingSettings" xsi:type="string">Avarda\ShippingBroker\Gateway\Request\ShippingSettingsDataBuilder</item>
             </argument>
         </arguments>
     </virtualType>
 
-    <preference for="Magento\Shipping\Helper\Data" type="Avarda\GatewayShipping\Helper\ShippingDetails" />
+    <preference for="Magento\Shipping\Helper\Data" type="Avarda\ShippingBroker\Helper\ShippingDetails" />
 
     <type name="Magento\Sales\Api\OrderRepositoryInterface">
-        <plugin name="Avarda_GatewayShipping::shipping_information" type="Avarda\GatewayShipping\Plugin\Sales\Model\OrderRepository" />
+        <plugin name="Avarda_ShippingBroker::shipping_information" type="Avarda\ShippingBroker\Plugin\Sales\Model\OrderRepository" />
     </type>
     <type name="Avarda\Checkout3\Controller\Checkout\Index">
-        <plugin name="Avarda_GatewayShipping::set_default_shipping_method" type="Avarda\GatewayShipping\Plugin\SetShippingMethodPlugin"/>
+        <plugin name="Avarda_ShippingBroker::set_default_shipping_method" type="Avarda\ShippingBroker\Plugin\SetShippingMethodPlugin"/>
     </type>
     <type name="Avarda\Checkout3\Gateway\Response\GetOnlyStatusHandler">
-        <plugin name="Avarda_GatewayShipping::update_shipping_price" type="Avarda\GatewayShipping\Plugin\Avarda\Gateway\Response\GetOnlyStatusHandler"/>
+        <plugin name="Avarda_ShippingBroker::update_shipping_price" type="Avarda\ShippingBroker\Plugin\Avarda\Gateway\Response\GetOnlyStatusHandler"/>
     </type>
     <type name="Avarda\Checkout3\Plugin\PrepareItems\Quote\QuoteCollectTotalsPrepareItems">
-        <plugin name="Avarda_GatewayShipping::skip_shipping_item" type="Avarda\GatewayShipping\Plugin\Avarda\PrepareItems\Quote\QuoteCollectTotalsPrepareItems"/>
+        <plugin name="Avarda_ShippingBroker::skip_shipping_item" type="Avarda\ShippingBroker\Plugin\Avarda\PrepareItems\Quote\QuoteCollectTotalsPrepareItems"/>
     </type>
 
-    <type name="Avarda\GatewayShipping\Plugin\Avarda\Gateway\Response\GetOnlyStatusHandler">
+    <type name="Avarda\ShippingBroker\Plugin\Avarda\Gateway\Response\GetOnlyStatusHandler">
         <arguments>
-            <argument name="parser" xsi:type="object">Avarda\GatewayShipping\Gateway\Response\GetShippingRateStatusParser</argument>
+            <argument name="parser" xsi:type="object">Avarda\ShippingBroker\Gateway\Response\GetShippingRateStatusParser</argument>
         </arguments>
     </type>
-    <type name="Avarda\GatewayShipping\Helper\ShippingDetails">
+    <type name="Avarda\ShippingBroker\Helper\ShippingDetails">
         <arguments>
             <argument name="session" xsi:type="object">Magento\Checkout\Model\Session\Proxy</argument>
         </arguments>
     </type>
-    <type name="Avarda\GatewayShipping\Plugin\SetShippingMethodPlugin">
+    <type name="Avarda\ShippingBroker\Plugin\SetShippingMethodPlugin">
         <arguments>
             <argument name="checkoutSession" xsi:type="object">Magento\Checkout\Model\Session\Proxy</argument>
         </arguments>

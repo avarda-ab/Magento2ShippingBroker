@@ -1,6 +1,6 @@
 /**
  * @copyright Copyright © Avarda. All rights reserved.
- * @package   Avarda_GatewayShipping
+ * @package   Avarda_ShippingBroker
  */
 define([
     'Magento_Checkout/js/model/checkout-data-resolver',
@@ -24,7 +24,7 @@ define([
         avardaCheckoutInitOptions: function (options) {
             let self = this;
             options.shippingOptionChangedCallback = function({ price, currency }, checkoutInstance) {
-                self.selectShippingMethod({'carrier_code': 'avarda', 'method_code': 'shipping_method_gateway'});
+                self.selectShippingMethod({'carrier_code': 'avarda', 'method_code': 'shipping_broker'});
             }
         }
     };

@@ -6,13 +6,13 @@ var config = {
     config: {
         mixins: {
             'Magento_Checkout/js/view/summary/shipping': {
-                'Avarda_GatewayShipping/js/mixins/shipping-mixin': true
+                'Avarda_ShippingBroker/js/mixins/shipping-mixin': true
             },
             'Avarda_Checkout3/js/view/checkout-view': {
-                'Avarda_GatewayShipping/js/mixins/checkout-view-mixin': true
+                'Avarda_ShippingBroker/js/mixins/checkout-view-mixin': true
             },
             'Avarda_Checkout3/js/view/shipping-method': {
-                'Avarda_GatewayShipping/js/mixins/shipping-method-mixin': true
+                'Avarda_ShippingBroker/js/mixins/shipping-method-mixin': true
             }
         }
     }

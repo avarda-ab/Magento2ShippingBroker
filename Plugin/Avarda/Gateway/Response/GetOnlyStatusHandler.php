@@ -7,9 +7,9 @@
 
 declare(strict_types=1);
 
-namespace Avarda\GatewayShipping\Plugin\Avarda\Gateway\Response;
+namespace Avarda\ShippingBroker\Plugin\Avarda\Gateway\Response;
 
-use Avarda\GatewayShipping\Api\Gateway\Response\ParserInterface;
+use Avarda\ShippingBroker\Api\Gateway\Response\ParserInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Payment\Gateway\Helper\SubjectReader;
 use Avarda\Checkout3\Gateway\Response\GetOnlyStatusHandler as AvardaGetOnlyStatusHandler;

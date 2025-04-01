@@ -1,11 +1,11 @@
 <?php
 
-namespace Avarda\GatewayShipping\Plugin\Avarda\PrepareItems\Quote;
+namespace Avarda\ShippingBroker\Plugin\Avarda\PrepareItems\Quote;
 
 class QuoteCollectTotalsPrepareItems
 {
     /**
-     * Do not add shipping item to as it is already added by shipping gateway
+     * Do not add shipping item to as it is already added by avarda shipping broker
      *
      * @return void
      */

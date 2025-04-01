@@ -1,6 +1,6 @@
-# Avarda GatewayShipping
+# Avarda ShippingBroker
 
-Gateway shipping handling for Avarda Checkout3.
+Avarda shipping broker handling for Avarda Checkout3.
 The main goal of this module is implementation of the shipping broker API on example of the Nshift broker.
 
 [See provider-specific integration guide](https://docs.avarda.com/checkout-3/shipping-broker/provider-specific-integration-guide/)
@@ -35,11 +35,11 @@ Assuming:
 2. shipping broker credentials is added your Avarda account
 3. Delivery methods are configured on the nshift account
 
-To install and use Avarda\GatewayShipping module in Magento:
+To install and use Avarda\ShippingBroker module in Magento:
 1. Install the module i.e. with composer
 ```
-composer require avarda/gateway-shipping
-bin/magento module:enable Avarda_GatewayShipping
+composer require avarda/shipping-broker
+bin/magento module:enable Avarda_ShippingBroker
 bin/magento setup:upgrade
 bin/magento setup:di:compile
 ```

@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace Avarda\GatewayShipping\Plugin\Sales\Model;
+namespace Avarda\ShippingBroker\Plugin\Sales\Model;
 
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Sales\Api\Data\OrderInterface;
@@ -39,7 +39,7 @@ class OrderRepository
         OrderRepositoryInterface $subject,
         OrderInterface $order
     ) {
-        $this->addShippingMethodGateway($order);
+        $this->addShippingBroker($order);
 
         return $order;
     }
@@ -56,7 +56,7 @@ class OrderRepository
         OrderSearchResultInterface $result
     ) {
         foreach ($result->getItems() as $order) {
-            $this->addShippingMethodGateway($order);
+            $this->addShippingBroker($order);
         }
 
         return $result;
@@ -68,7 +68,7 @@ class OrderRepository
      * @param OrderInterface $order
      * @return void
      */
-    protected function addShippingMethodGateway(OrderInterface $order)
+    protected function addShippingBroker(OrderInterface $order)
     {
         $orderExtensionAttributes = $order->getExtensionAttributes() ?: $this->orderExtensionFactory->create();
 

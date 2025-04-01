@@ -1,7 +1,7 @@
 {
-    "name": "avarda/gateway-shipping",
+    "name": "avarda/shipping-broker",
     "version": "1.0.1",
-    "description": "Gateway shipping handling for Avarda Checkout3",
+    "description": "Avarda shipping broker handling for Avarda Checkout3",
     "type": "magento2-module",
     "license": [
         "Proprietary"
@@ -21,7 +21,7 @@
             "registration.php"
         ],
         "psr-4": {
-            "Avarda\\GatewayShipping\\": ""
+            "Avarda\\ShippingBroker\\": ""
         }
     }
 }

@@ -7,12 +7,12 @@
 
 declare(strict_types=1);
 
-namespace Avarda\GatewayShipping\Gateway\Request;
+namespace Avarda\ShippingBroker\Gateway\Request;
 
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Payment\Gateway\Helper\SubjectReader;
 use Magento\Payment\Gateway\Request\BuilderInterface;
-use Avarda\GatewayShipping\Api\Gateway\Request\CustomAttributeBuilderInterface;
+use Avarda\ShippingBroker\Api\Gateway\Request\CustomAttributeBuilderInterface;
 
 class ShippingSettingsDataBuilder implements BuilderInterface
 {

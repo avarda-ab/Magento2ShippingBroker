@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace Avarda\GatewayShipping\Plugin\Framework\View\Element;
+namespace Avarda\ShippingBroker\Plugin\Framework\View\Element;
 
 use Magento\Framework\View\Element\Template;
 

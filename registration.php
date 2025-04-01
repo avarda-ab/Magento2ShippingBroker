@@ -7,6 +7,6 @@
 
 \Magento\Framework\Component\ComponentRegistrar::register(
     \Magento\Framework\Component\ComponentRegistrar::MODULE,
-    'Avarda_GatewayShipping',
+    'Avarda_ShippingBroker',
     __DIR__
 );

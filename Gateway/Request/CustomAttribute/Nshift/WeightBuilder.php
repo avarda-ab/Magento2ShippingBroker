@@ -7,9 +7,9 @@
 
 declare(strict_types=1);
 
-namespace Avarda\GatewayShipping\Gateway\Request\CustomAttribute\Nshift;
+namespace Avarda\ShippingBroker\Gateway\Request\CustomAttribute\Nshift;
 
-use Avarda\GatewayShipping\Api\Gateway\Request\CustomAttributeBuilderInterface;
+use Avarda\ShippingBroker\Api\Gateway\Request\CustomAttributeBuilderInterface;
 use Magento\Quote\Api\Data\CartInterface;
 use Magento\Store\Api\Data\StoreConfigInterface;
 use Magento\Store\Api\StoreConfigManagerInterface;

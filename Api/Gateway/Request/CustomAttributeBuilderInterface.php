@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace Avarda\GatewayShipping\Api\Gateway\Request;
+namespace Avarda\ShippingBroker\Api\Gateway\Request;
 
 use Magento\Quote\Api\Data\CartInterface;
 

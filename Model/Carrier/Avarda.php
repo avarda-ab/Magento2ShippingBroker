@@ -7,10 +7,10 @@
 
 declare(strict_types=1);
 
-namespace Avarda\GatewayShipping\Model\Carrier;
+namespace Avarda\ShippingBroker\Model\Carrier;
 
 use Avarda\Checkout3\Api\QuotePaymentManagementInterface;
-use Avarda\GatewayShipping\Api\Gateway\Response\ParserInterface;
+use Avarda\ShippingBroker\Api\Gateway\Response\ParserInterface;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Response\RedirectInterface;
@@ -40,7 +40,7 @@ use Psr\Log\LoggerInterface;
  */
 class Avarda extends AbstractCarrier implements CarrierInterface
 {
-    public const GATEWAY_KEY = 'shipping_method_gateway';
+    public const METHOD_CODE = 'shipping_broker';
 
     /**
      * @var string $_code
@@ -151,7 +151,7 @@ class Avarda extends AbstractCarrier implements CarrierInterface
      */
     public function getAllowedMethods(): array
     {
-        return [self::GATEWAY_KEY => $this->getConfigData('name')];
+        return [self::METHOD_CODE => $this->getConfigData('name')];
     }
 
     /**
@@ -166,7 +166,7 @@ class Avarda extends AbstractCarrier implements CarrierInterface
         /** @var \Magento\Quote\Model\Quote\Address\RateResult\Method $method */
         $method = $this->_rateMethodFactory->create();
         $method->setCarrier($this->_code);
-        $method->setMethod(self::GATEWAY_KEY);
+        $method->setMethod(self::METHOD_CODE);
         $method->setCarrierTitle($this->getConfigData('title'));
         $method->setMethodTitle($this->getConfigData('name'));
 

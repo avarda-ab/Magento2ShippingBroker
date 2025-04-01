@@ -1,6 +1,6 @@
 <?php
 
-namespace Avarda\GatewayShipping\Plugin;
+namespace Avarda\ShippingBroker\Plugin;
 
 use Avarda\Checkout3\Controller\Checkout\Index;
 use Magento\Checkout\Model\Session as CheckoutSession;
@@ -28,7 +28,7 @@ class SetShippingMethodPlugin
     {
         $this->checkoutSession->getQuote()
             ->getShippingAddress()
-            ->setShippingMethod('avarda_shipping_method_gateway')
+            ->setShippingMethod('avarda_shipping_broker')
             ->save();
     }
 }

@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace Avarda\GatewayShipping\Gateway\Request\Item;
+namespace Avarda\ShippingBroker\Gateway\Request\Item;
 
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Framework\Exception\LocalizedException;
@@ -17,7 +17,7 @@ use Magento\Store\Api\Data\StoreConfigInterface;
 use Magento\Store\Api\StoreConfigManagerInterface;
 
 /**
- * Builder for "shippingParamaters" array in the avarda gateway shipping
+ * Builder for "shippingParamaters" array in the avarda shipping broker
  */
 class ShippingParametersDataBuilder implements BuilderInterface
 {
