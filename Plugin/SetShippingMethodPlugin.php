@@ -28,7 +28,7 @@ class SetShippingMethodPlugin
     {
         $this->checkoutSession->getQuote()
             ->getShippingAddress()
-            ->setShippingMethod('avarda_shipping_method_gateway_avarda_shipping_method_gateway')
+            ->setShippingMethod('avarda_shipping_method_gateway')
             ->save();
     }
 }

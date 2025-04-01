@@ -40,13 +40,12 @@ use Psr\Log\LoggerInterface;
  */
 class Avarda extends AbstractCarrier implements CarrierInterface
 {
-    public const GATEWAY_KEY = 'avarda_shipping_method_gateway';
+    public const GATEWAY_KEY = 'shipping_method_gateway';
 
     /**
      * @var string $_code
-     * @codingStandardsIgnoreLine
      */
-    protected $_code = 'avarda_shipping_method_gateway';
+    protected $_code = 'avarda';
 
     /**
      * @var bool
@@ -122,7 +121,7 @@ class Avarda extends AbstractCarrier implements CarrierInterface
     public function getAvardaStatus(): bool|array
     {
         $purchaseData = $this->quotePaymentManagement->getPurchaseData($this->getQuote()?->getId());
-        /** TODO: change to 'additional' builder */
+        /** @TODO: change to 'additional' builder */
         $transferO = $this->transferFactory->create([
             "additional" =>
             [
@@ -142,7 +141,7 @@ class Avarda extends AbstractCarrier implements CarrierInterface
      * @codeCoverageIgnore
      * @codingStandardsIgnoreLine
      */
-    protected function _doShipmentRequest(DataObject $request): DataObject
+    public function _doShipmentRequest(DataObject $request): DataObject
     {
         return $request;
     }
@@ -152,7 +151,7 @@ class Avarda extends AbstractCarrier implements CarrierInterface
      */
     public function getAllowedMethods(): array
     {
-        return [$this->_code => $this->getConfigData('name')];
+        return [self::GATEWAY_KEY => $this->getConfigData('name')];
     }
 
     /**
@@ -167,8 +166,8 @@ class Avarda extends AbstractCarrier implements CarrierInterface
         /** @var \Magento\Quote\Model\Quote\Address\RateResult\Method $method */
         $method = $this->_rateMethodFactory->create();
         $method->setCarrier($this->_code);
+        $method->setMethod(self::GATEWAY_KEY);
         $method->setCarrierTitle($this->getConfigData('title'));
-        $method->setMethod($this->_code);
         $method->setMethodTitle($this->getConfigData('name'));
 
         $shippingStatus = $this->getAvardaStatus();
