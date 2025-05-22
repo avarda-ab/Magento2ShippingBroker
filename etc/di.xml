@@ -45,6 +45,9 @@
     <type name="Avarda\Checkout3\Controller\Checkout\Index">
         <plugin name="Avarda_ShippingBroker::set_default_shipping_method" type="Avarda\ShippingBroker\Plugin\SetShippingMethodPlugin"/>
     </type>
+    <type name="Avarda\Checkout3\Gateway\Request\ItemsDataBuilder">
+        <plugin name="Avarda_ShippingBroker::add_fallback_shipping_method" type="Avarda\ShippingBroker\Plugin\Avarda\Gateway\Request\AddFallbackShippingMethod"/>
+    </type>
     <type name="Avarda\Checkout3\Gateway\Response\GetOnlyStatusHandler">
         <plugin name="Avarda_ShippingBroker::update_shipping_price" type="Avarda\ShippingBroker\Plugin\Avarda\Gateway\Response\GetOnlyStatusHandler"/>
     </type>
