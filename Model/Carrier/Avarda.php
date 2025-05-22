@@ -17,19 +17,19 @@ use Magento\Framework\App\Response\RedirectInterface;
 use Magento\Framework\DataObject;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Payment\Gateway\Http\AvardaerException;
 use Magento\Payment\Gateway\Http\ClientException;
 use Magento\Payment\Gateway\Http\ClientInterface;
-use Magento\Payment\Gateway\Http\AvardaerException;
 use Magento\Payment\Gateway\Http\TransferFactoryInterface;
+use Magento\Quote\Api\Data\CartInterface;
+use Magento\Quote\Model\Quote\Address\RateRequest;
+use Magento\Quote\Model\Quote\Address\RateResult\ErrorFactory;
+use Magento\Quote\Model\Quote\Address\RateResult\Method;
+use Magento\Quote\Model\Quote\Address\RateResult\MethodFactory;
 use Magento\Shipping\Model\Carrier\AbstractCarrier;
 use Magento\Shipping\Model\Carrier\CarrierInterface;
 use Magento\Shipping\Model\Rate\Result;
 use Magento\Shipping\Model\Rate\ResultFactory;
-use Magento\Quote\Api\Data\CartInterface;
-use Magento\Quote\Model\Quote\Address\RateRequest;
-use Magento\Quote\Model\Quote\Address\RateResult\Method;
-use Magento\Quote\Model\Quote\Address\RateResult\ErrorFactory;
-use Magento\Quote\Model\Quote\Address\RateResult\MethodFactory;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -55,17 +55,17 @@ class Avarda extends AbstractCarrier implements CarrierInterface
     /**
      * @var ResultFactory
      */
-    protected $_rateResultFactory;
+    protected ResultFactory $_rateResultFactory;
 
     /**
      * @var MethodFactory
      */
-    protected $_rateMethodFactory;
+    protected MethodFactory $_rateMethodFactory;
 
     /**
      * @var CartInterface
      */
-    protected $quote;
+    protected CartInterface $quote;
 
     public function __construct(
         ScopeConfigInterface $scopeConfig,
@@ -81,9 +81,10 @@ class Avarda extends AbstractCarrier implements CarrierInterface
         public RedirectInterface $redirect,
         array $data = []
     ) {
+        parent::__construct($scopeConfig, $rateErrorFactory, $logger, $data);
+
         $this->_rateResultFactory = $rateResultFactory;
         $this->_rateMethodFactory = $rateMethodFactory;
-        parent::__construct($scopeConfig, $rateErrorFactory, $logger, $data);
     }
 
     /**
@@ -123,8 +124,7 @@ class Avarda extends AbstractCarrier implements CarrierInterface
         $purchaseData = $this->quotePaymentManagement->getPurchaseData($this->getQuote()?->getId());
         /** @TODO: change to 'additional' builder */
         $transferO = $this->transferFactory->create([
-            "additional" =>
-            [
+            "additional" => [
                 'purchaseid' => $purchaseData['purchaseId'],
                 'storeId' => $this->getQuote()->getStoreId(),
                 'useAltApi' => false
