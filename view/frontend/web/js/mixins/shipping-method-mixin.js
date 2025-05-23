@@ -24,7 +24,10 @@ define([
         avardaCheckoutInitOptions: function (options) {
             let self = this;
             options.shippingOptionChangedCallback = function({ price, currency }, checkoutInstance) {
-                self.selectShippingMethod({'carrier_code': 'avarda', 'method_code': 'shipping_broker'});
+                self.selectShippingMethod({
+                    'carrier_code': 'avarda',
+                    'method_code': 'shipping_broker'
+                });
             }
         }
     };
