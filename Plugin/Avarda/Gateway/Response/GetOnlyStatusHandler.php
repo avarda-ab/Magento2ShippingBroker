@@ -48,7 +48,7 @@ class GetOnlyStatusHandler
         $shippingAddress = $order->getShippingAddress();
         $rateId = $shippingAddress->getShippingRatesCollection()->getFirstItem()->getId();
         $rate = $shippingAddress->getShippingRateById((int) $rateId);
-        if ($rate != false) {
+        if ($rate) {
             $rate->setMethodDescription(json_encode($parsedResponse));
             $rate->setPrice($parsedResponse['price'])->save();
         }

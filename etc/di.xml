@@ -40,9 +40,6 @@
 
     <preference for="Magento\Shipping\Helper\Data" type="Avarda\ShippingBroker\Helper\ShippingDetails" />
 
-    <type name="Magento\Sales\Api\OrderRepositoryInterface">
-        <plugin name="Avarda_ShippingBroker::shipping_information" type="Avarda\ShippingBroker\Plugin\Sales\Model\OrderRepository" />
-    </type>
     <type name="Avarda\Checkout3\Controller\Checkout\Index">
         <plugin name="Avarda_ShippingBroker::set_default_shipping_method" type="Avarda\ShippingBroker\Plugin\SetShippingMethodPlugin"/>
     </type>
