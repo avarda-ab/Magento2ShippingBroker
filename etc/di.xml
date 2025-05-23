@@ -11,6 +11,7 @@
             <argument name="httpClient" xsi:type="object">AvardaCheckout3Client</argument>
             <argument name="transferFactory" xsi:type="object">AvardaCheckout3GetPaymentStatusTransferFactory</argument>
             <argument name="parser" xsi:type="object">Avarda\ShippingBroker\Gateway\Response\GetShippingRateStatusParser</argument>
+            <argument name="checkoutSession" xsi:type="object">Magento\Checkout\Model\Session\Proxy</argument>
         </arguments>
     </type>
     <type name="Avarda\ShippingBroker\Gateway\Request\ShippingSettingsDataBuilder">
