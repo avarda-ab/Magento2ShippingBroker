@@ -15,95 +15,87 @@ use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Response\RedirectInterface;
 use Magento\Framework\DataObject;
-use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\Payment\Gateway\Http\AvardaerException;
-use Magento\Payment\Gateway\Http\ClientException;
 use Magento\Payment\Gateway\Http\ClientInterface;
 use Magento\Payment\Gateway\Http\TransferFactoryInterface;
-use Magento\Quote\Api\Data\CartInterface;
 use Magento\Quote\Model\Quote\Address\RateRequest;
-use Magento\Quote\Model\Quote\Address\RateResult\ErrorFactory;
-use Magento\Quote\Model\Quote\Address\RateResult\Method;
-use Magento\Quote\Model\Quote\Address\RateResult\MethodFactory;
-use Magento\Shipping\Model\Carrier\AbstractCarrier;
+use Magento\Shipping\Model\Carrier\AbstractCarrierOnline;
 use Magento\Shipping\Model\Carrier\CarrierInterface;
-use Magento\Shipping\Model\Rate\Result;
-use Magento\Shipping\Model\Rate\ResultFactory;
-use Psr\Log\LoggerInterface;
 
-/**
- * The Avarda Shipping Carrier for our shipping api gateway
- *
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
- * @internal
- */
-class Avarda extends AbstractCarrier implements CarrierInterface
+class Avarda extends AbstractCarrierOnline implements CarrierInterface
 {
-    public const METHOD_CODE = 'shipping_broker';
-
-    /**
-     * @var string $_code
-     */
+    public const string METHOD_CODE = 'shipping_broker';
     protected $_code = 'avarda';
-
-    /**
-     * @var bool
-     */
     protected $_isFixed = true;
 
-    /**
-     * @var ResultFactory
-     */
-    protected ResultFactory $_rateResultFactory;
-
-    /**
-     * @var MethodFactory
-     */
-    protected MethodFactory $_rateMethodFactory;
-
-    /**
-     * @var CartInterface
-     */
-    protected CartInterface $quote;
+    protected ClientInterface $httpClient;
+    protected ParserInterface $parser;
+    protected QuotePaymentManagementInterface $quotePaymentManagement;
+    protected RedirectInterface $redirect;
+    protected Session $checkoutSession;
+    protected TransferFactoryInterface $transferFactory;
 
     public function __construct(
         ScopeConfigInterface $scopeConfig,
-        ErrorFactory $rateErrorFactory,
-        LoggerInterface $logger,
-        ResultFactory $rateResultFactory,
-        MethodFactory $rateMethodFactory,
-        protected readonly QuotePaymentManagementInterface $quotePaymentManagement,
-        protected readonly Session $checkoutSession,
-        protected readonly ClientInterface $httpClient,
-        protected readonly TransferFactoryInterface $transferFactory,
-        protected readonly ParserInterface $parser,
-        public RedirectInterface $redirect,
+        \Magento\Quote\Model\Quote\Address\RateResult\ErrorFactory $rateErrorFactory,
+        \Psr\Log\LoggerInterface $logger,
+        \Magento\Framework\Xml\Security $xmlSecurity,
+        \Magento\Shipping\Model\Simplexml\ElementFactory $xmlElFactory,
+        \Magento\Shipping\Model\Rate\ResultFactory $rateFactory,
+        \Magento\Quote\Model\Quote\Address\RateResult\MethodFactory $rateMethodFactory,
+        \Magento\Shipping\Model\Tracking\ResultFactory $trackFactory,
+        \Magento\Shipping\Model\Tracking\Result\ErrorFactory $trackErrorFactory,
+        \Magento\Shipping\Model\Tracking\Result\StatusFactory $trackStatusFactory,
+        \Magento\Directory\Model\RegionFactory $regionFactory,
+        \Magento\Directory\Model\CountryFactory $countryFactory,
+        \Magento\Directory\Model\CurrencyFactory $currencyFactory,
+        \Magento\Directory\Helper\Data $directoryData,
+        \Magento\CatalogInventory\Api\StockRegistryInterface $stockRegistry,
+        ClientInterface $httpClient,
+        ParserInterface $parser,
+        QuotePaymentManagementInterface $quotePaymentManagement,
+        RedirectInterface $redirect,
+        Session $checkoutSession,
+        TransferFactoryInterface $transferFactory,
         array $data = []
     ) {
-        parent::__construct($scopeConfig, $rateErrorFactory, $logger, $data);
+        parent::__construct(
+            $scopeConfig,
+            $rateErrorFactory,
+            $logger,
+            $xmlSecurity,
+            $xmlElFactory,
+            $rateFactory,
+            $rateMethodFactory,
+            $trackFactory,
+            $trackErrorFactory,
+            $trackStatusFactory,
+            $regionFactory,
+            $countryFactory,
+            $currencyFactory,
+            $directoryData,
+            $stockRegistry,
+            $data
+        );
 
-        $this->_rateResultFactory = $rateResultFactory;
-        $this->_rateMethodFactory = $rateMethodFactory;
+        $this->httpClient = $httpClient;
+        $this->parser = $parser;
+        $this->quotePaymentManagement = $quotePaymentManagement;
+        $this->redirect = $redirect;
+        $this->checkoutSession = $checkoutSession;
+        $this->transferFactory = $transferFactory;
     }
 
-    /**
-     * Collect and get rates
-     *
-     * @param RateRequest $request
-     * @return Result
-     * @throws ClientException
-     */
-    public function collectRates(RateRequest $request): Result
+    public function collectRates(RateRequest $request)
     {
-        /** @var \Magento\Shipping\Model\Rate\Result $result */
-        $result = $this->_rateResultFactory->create();
+        $result = $this->_rateFactory->create();
         if (!$this->getConfigFlag('active')) {
             return $result;
         }
 
         $method = $this->createResultMethod();
-        if (!str_contains($this->redirect->getRefererUrl(), 'avarda3/checkout') && !$method->getData('price')) {
+        if (!str_contains($this->redirect->getRefererUrl(), 'avarda3/checkout') &&
+            !$method->getData('price')
+        ) {
             return $result;
         }
 
@@ -112,61 +104,30 @@ class Avarda extends AbstractCarrier implements CarrierInterface
         return $result;
     }
 
-    /**
-     * Retrieve shipping price by gateway request
-     *
-     * @return bool|array
-     * @throws ClientException
-     * @throws AvardaerException
-     */
-    public function getAvardaStatus(): bool|array
-    {
-        $purchaseData = $this->quotePaymentManagement->getPurchaseData($this->getQuote()?->getId());
-        /** @TODO: change to 'additional' builder */
-        $transferO = $this->transferFactory->create([
-            "additional" => [
-                'purchaseid' => $purchaseData['purchaseId'],
-                'storeId' => $this->getQuote()->getStoreId(),
-                'useAltApi' => false
-            ]
-        ]);
-        return $this->parser->parse($this->httpClient->placeRequest($transferO));
-    }
-
-    /**
-     * Return unchanged input object because we're not having a pure carrier web service
-     *
-     * @param DataObject $request
-     * @return DataObject
-     * @codeCoverageIgnore
-     * @codingStandardsIgnoreLine
-     */
-    public function _doShipmentRequest(DataObject $request): DataObject
+    protected function _doShipmentRequest(DataObject $request)
     {
         return $request;
     }
 
     /**
-     * @inheritDoc
+     * Get allowed methods.
+     *
+     * @return array
      */
-    public function getAllowedMethods(): array
+    public function getAllowedMethods()
     {
-        return [self::METHOD_CODE => $this->getConfigData('name')];
+        return [
+            self::METHOD_CODE => $this->getConfigData('name')
+        ];
     }
 
-    /**
-     * Create rate object based on shipping price.
-     *
-     * @return Method
-     * @throws ClientException
-     * @throws AvardaerException
-     */
-    private function createResultMethod(): Method
+    private function createResultMethod()
     {
-        /** @var \Magento\Quote\Model\Quote\Address\RateResult\Method $method */
         $method = $this->_rateMethodFactory->create();
+
         $method->setCarrier($this->_code);
         $method->setMethod(self::METHOD_CODE);
+
         $method->setCarrierTitle($this->getConfigData('title'));
         $method->setMethodTitle($this->getConfigData('name'));
 
@@ -180,19 +141,31 @@ class Avarda extends AbstractCarrier implements CarrierInterface
         return $method;
     }
 
-    /**
-     * Retrieve quote object
-     *
-     * @return CartInterface
-     * @throws LocalizedException
-     * @throws NoSuchEntityException
-     */
-    protected function getQuote(): CartInterface
+    public function getAvardaStatus(): bool|array
+    {
+        $purchaseData = $this->quotePaymentManagement->getPurchaseData($this->getQuote()?->getId());
+        /** @TODO: change to 'additional' builder */
+        $transfer = $this->transferFactory->create([
+            "additional" => [
+                'purchaseid' => $purchaseData['purchaseId'],
+                'storeId' => $this->getQuote()->getStoreId(),
+                'useAltApi' => false
+            ]
+        ]);
+        return $this->parser->parse($this->httpClient->placeRequest($transfer));
+    }
+
+    protected function getQuote()
     {
         if (!isset($this->quote)) {
             $this->quote = $this->checkoutSession->getQuote();
         }
 
         return $this->quote;
+    }
+
+    public function processAdditionalValidation(DataObject $request)
+    {
+        return true;
     }
 }
