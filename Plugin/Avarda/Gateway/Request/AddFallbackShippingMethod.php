@@ -32,14 +32,14 @@ class AddFallbackShippingMethod
         ItemsDataBuilder $subject,
         array $result
     ) {
-        /*$result[ItemsDataBuilder::ITEMS][] = (object) [
+        $result[ItemsDataBuilder::ITEMS][] = (object) [
             'Description' => 'Shipping Fallback - (name)',
             'Notes' => self::FALLBACK_SHIPPING_CODE,
             'Amount' => 5.0,
             'TaxCode' => '25.5%',
             'TaxAmount' => 25.5,
             'Quantity' => 1,
-        ];*/
+        ];
 
         return $result;
     }
