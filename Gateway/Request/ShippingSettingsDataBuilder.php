@@ -42,6 +42,10 @@ class ShippingSettingsDataBuilder implements BuilderInterface
         $paymentDO = SubjectReader::readPayment($buildSubject);
         $order = $this->quoteRepository->get($paymentDO->getOrder()->getId());
 
+        if ($order->getIsVirtual()) {
+            return [];
+        }
+
         return [
             self::SHIPPING_SETTINGS => [
                 self::ATTRIBUTES => $this->getAttributes($order),
