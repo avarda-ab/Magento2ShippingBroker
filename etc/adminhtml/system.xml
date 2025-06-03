@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @copyright   Copyright © Avarda. All rights reserved.
+ * @package     Avarda_ShippingBroker
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="payment">
+            <group id="avarda_checkout3_section" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="1">
+                <group id="shipping" translate="label comment" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Avarda Shipping Broker</label>
+                    <field id="active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Enabled</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>carriers/avarda/active</config_path>
+                    </field>
+                </group>
+            </group>
+        </section>
+    </system>
+</config>

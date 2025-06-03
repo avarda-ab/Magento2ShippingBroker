@@ -9,7 +9,7 @@
     <default>
         <carriers>
             <avarda>
-                <active>1</active>
+                <active>0</active>
                 <allowed_methods>delivery</allowed_methods>
                 <methods>delivery</methods>
                 <model>Avarda\ShippingBroker\Model\Carrier\Avarda</model>
