@@ -21,6 +21,10 @@ class SavePickupPointToOrder implements ObserverInterface
         $order = $observer->getEvent()->getOrder();
         $quoteId = $order->getQuoteId();
 
+        if (!$quoteId) {
+            return;
+        }
+
         $quote = $this->quoteRepository->get($quoteId);
         $shippingAddress = $quote->getShippingAddress();
         $shippingMethod = $shippingAddress->getShippingMethod();
