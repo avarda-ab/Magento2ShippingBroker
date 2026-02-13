@@ -156,7 +156,7 @@ class Avarda extends AbstractCarrierOnline implements CarrierInterface
 
     public function getAvardaStatus(): bool|array
     {
-        if ($this->getQuote()) {
+        if (!$this->getQuote()) {
             return false;
         }
 
