@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Avarda\ShippingBroker\Model\Carrier;
 
 use Avarda\Checkout3\Api\QuotePaymentManagementInterface;
+use Avarda\Checkout3\Helper\PaymentData;
 use Avarda\ShippingBroker\Api\Gateway\Response\ParserInterface;
 use Magento\CatalogInventory\Api\StockRegistryInterface;
 use Magento\Checkout\Model\Session;
@@ -41,7 +42,7 @@ class Avarda extends AbstractCarrierOnline implements CarrierInterface
 
     protected ClientInterface $httpClient;
     protected ParserInterface $parser;
-    protected QuotePaymentManagementInterface $quotePaymentManagement;
+    protected PaymentData $paymentDataHelper;
     protected RedirectInterface $redirect;
     protected Session $checkoutSession;
     protected TransferFactoryInterface $transferFactory;
@@ -64,7 +65,7 @@ class Avarda extends AbstractCarrierOnline implements CarrierInterface
         StockRegistryInterface $stockRegistry,
         ClientInterface $httpClient,
         ParserInterface $parser,
-        QuotePaymentManagementInterface $quotePaymentManagement,
+        PaymentData $paymentDataHelper,
         RedirectInterface $redirect,
         Session $checkoutSession,
         TransferFactoryInterface $transferFactory,
@@ -91,7 +92,7 @@ class Avarda extends AbstractCarrierOnline implements CarrierInterface
 
         $this->httpClient = $httpClient;
         $this->parser = $parser;
-        $this->quotePaymentManagement = $quotePaymentManagement;
+        $this->paymentDataHelper = $paymentDataHelper;
         $this->redirect = $redirect;
         $this->checkoutSession = $checkoutSession;
         $this->transferFactory = $transferFactory;
@@ -155,7 +156,18 @@ class Avarda extends AbstractCarrierOnline implements CarrierInterface
 
     public function getAvardaStatus(): bool|array
     {
-        $purchaseData = $this->quotePaymentManagement->getPurchaseData($this->getQuote()?->getId());
+        if ($this->getQuote()) {
+            return false;
+        }
+
+        $purchaseData = $this->paymentDataHelper->getPurchaseData(
+            $this->getQuote()->getPayment()
+        );
+
+        if (!$purchaseData || count($purchaseData) == 0) {
+            return false;
+        }
+
         /** @TODO: change to 'additional' builder */
         $transfer = $this->transferFactory->create([
             "additional" => [
