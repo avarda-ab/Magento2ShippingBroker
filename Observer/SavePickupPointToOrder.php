@@ -2,6 +2,7 @@
 
 namespace Avarda\ShippingBroker\Observer;
 
+use Avarda\ShippingBroker\Model\Carrier\Avarda;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Quote\Api\CartRepositoryInterface;
@@ -30,7 +31,7 @@ class SavePickupPointToOrder implements ObserverInterface
         $shippingMethod = $shippingAddress->getShippingMethod();
         $shippingData = $shippingAddress->getShippingRateByCode($shippingMethod);
 
-        if ($shippingData && $shippingData->getMethod() === 'shipping_broker') {
+        if ($shippingData && $shippingData->getMethod() === Avarda::METHOD_CODE) {
             $pickupPoint = $shippingData->getMethodDescription();
             if ($pickupPoint) {
                 $order->getShippingAddress()->setNshiftPickupPoint($pickupPoint);
