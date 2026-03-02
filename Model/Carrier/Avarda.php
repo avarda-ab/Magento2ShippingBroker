@@ -24,7 +24,9 @@ use Magento\Framework\DataObject;
 use Magento\Framework\Xml\Security;
 use Magento\Payment\Gateway\Http\ClientInterface;
 use Magento\Payment\Gateway\Http\TransferFactoryInterface;
+use Magento\Quote\Api\Data\CartInterface;
 use Magento\Quote\Model\Quote\Address\RateRequest;
+use Magento\Quote\Model\Quote\Address\RateResult\Method;
 use Magento\Quote\Model\Quote\Address\RateResult\MethodFactory;
 use Magento\Shipping\Model\Carrier\AbstractCarrierOnline;
 use Magento\Shipping\Model\Carrier\CarrierInterface;
@@ -105,7 +107,7 @@ class Avarda extends AbstractCarrierOnline implements CarrierInterface
             return $result;
         }
 
-        $method = $this->createResultMethod();
+        $method = $this->createResultMethod($request);
         if (!str_contains($this->redirect->getRefererUrl(), 'avarda3/checkout') &&
             !$method->getData('price')
         ) {
@@ -134,7 +136,11 @@ class Avarda extends AbstractCarrierOnline implements CarrierInterface
         ];
     }
 
-    private function createResultMethod()
+    /**
+     * @param $request
+     * @return Method
+     */
+    private function createResultMethod($request)
     {
         $method = $this->_rateMethodFactory->create();
 
@@ -144,7 +150,7 @@ class Avarda extends AbstractCarrierOnline implements CarrierInterface
         $method->setCarrierTitle($this->getConfigData('title'));
         $method->setMethodTitle($this->getConfigData('name'));
 
-        $shippingStatus = $this->getAvardaStatus();
+        $shippingStatus = $this->getAvardaStatus($request);
         if ($shippingStatus) {
             $method->setMethodTitle($shippingStatus['selectedOptionName'] ?? '');
             $method->setPrice($shippingStatus['price']);
@@ -154,14 +160,25 @@ class Avarda extends AbstractCarrierOnline implements CarrierInterface
         return $method;
     }
 
-    public function getAvardaStatus(): bool|array
+    /**
+     * @param $request
+     * @return bool|array
+     * @throws \Magento\Payment\Gateway\Http\ClientException
+     * @throws \Magento\Payment\Gateway\Http\ConverterException
+     */
+    public function getAvardaStatus($request): bool|array
     {
-        if (!$this->getQuote()) {
+        if (!$request->getAllItems()) {
             return false;
         }
 
+        // By taking the quote from the item we avoid collecting totals which could end up in infinite loop
+        $firstItem = $request->getAllItems()[0];
+        /** @var CartInterface $quote */
+        $quote = $firstItem->getQuote();
+
         $purchaseData = $this->paymentDataHelper->getPurchaseData(
-            $this->getQuote()->getPayment()
+            $quote->getPayment()
         );
 
         if (!$purchaseData || count($purchaseData) == 0) {
@@ -172,7 +189,7 @@ class Avarda extends AbstractCarrierOnline implements CarrierInterface
         $transfer = $this->transferFactory->create([
             "additional" => [
                 'purchaseid' => $purchaseData['purchaseId'],
-                'storeId' => $this->getQuote()->getStoreId(),
+                'storeId' => $quote->getStoreId(),
                 'useAltApi' => false
             ]
         ]);
