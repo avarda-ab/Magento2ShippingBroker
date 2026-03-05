@@ -5,6 +5,7 @@ namespace Avarda\ShippingBroker\Observer;
 use Avarda\ShippingBroker\Model\Carrier\Avarda;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Quote\Api\CartRepositoryInterface;
 
 class SavePickupPointToOrder implements ObserverInterface
@@ -26,7 +27,13 @@ class SavePickupPointToOrder implements ObserverInterface
             return;
         }
 
-        $quote = $this->quoteRepository->get($quoteId);
+        try {
+            // If old order, the quote might not exist anymore, but then the update is not necessary
+            $quote = $this->quoteRepository->get($quoteId);
+        } catch (NoSuchEntityException $e) {
+            return;
+        }
+
         $shippingAddress = $quote->getShippingAddress();
         $shippingMethod = $shippingAddress->getShippingMethod();
         $shippingData = $shippingAddress->getShippingRateByCode($shippingMethod);
