@@ -5,10 +5,14 @@
 define([
     'Magento_Checkout/js/model/checkout-data-resolver',
     'Magento_Checkout/js/view/shipping',
+    'unifaunCheckout',
 ], function (
     checkoutDataResolver,
     grandParentComponent,
+    UnifaunCheckout,
 ) {
+    // Avarda checkout expects UnifaunCheckout on window
+    window.UnifaunCheckout = UnifaunCheckout;
     'use strict';
 
     // Change payment method title for now set to empty string
