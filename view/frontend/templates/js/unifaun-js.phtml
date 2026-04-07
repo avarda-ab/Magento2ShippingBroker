@@ -1,6 +1,24 @@
 <?php /** @var \Magento\Framework\View\Helper\SecureHtmlRenderer $secureRenderer */
-echo $secureRenderer->renderTag('script', [], 'let _define = window.define;window.define = undefined;');
+echo $secureRenderer->renderTag('script', [], '
+    var _define = window.define;
+    window.define = undefined;
+    var unifaunObserver = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            mutation.addedNodes.forEach(function(node) {
+                if (node.tagName === "SCRIPT" && node.src && node.src.indexOf("api.unifaun.com") !== -1) {
+                    window.define = undefined;
+                    node.addEventListener("load", function() {
+                        window.define = _define;
+                    });
+                }
+            });
+        });
+    });
+    unifaunObserver.observe(document, { childList: true, subtree: true });
+', false);
 ?>
 <script src="https://api.unifaun.com/rs-extapi/v1/delivery-checkouts-widget/unifaun-checkout-all.min.js"></script>
 <?php
-echo $secureRenderer->renderTag('script', [], 'window.define = _define;');
+echo $secureRenderer->renderTag('script', [], '
+    window.define = _define;
+', false);
