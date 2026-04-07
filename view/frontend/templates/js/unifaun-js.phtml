@@ -1,0 +1,6 @@
+<?php /** @var \Magento\Framework\View\Helper\SecureHtmlRenderer $secureRenderer */
+echo $secureRenderer->renderTag('script', [], 'let _define = window.define;window.define = undefined;');
+?>
+<script src="https://api.unifaun.com/rs-extapi/v1/delivery-checkouts-widget/unifaun-checkout-all.min.js"></script>
+<?php
+echo $secureRenderer->renderTag('script', [], 'window.define = _define;');

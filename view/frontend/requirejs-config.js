@@ -3,9 +3,6 @@
  * @package   Avarda_Checkout3
  */
 var config = {
-    paths: {
-        'unifaunCheckout': 'https://api.unifaun.com/rs-extapi/v1/delivery-checkouts-widget/unifaun-checkout-all.min'
-    },
     config: {
         mixins: {
             'Magento_Checkout/js/view/summary/shipping': {

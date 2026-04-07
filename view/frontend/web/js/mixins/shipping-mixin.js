@@ -5,7 +5,7 @@
 define([], function () {
     'use strict';
 
-    // Do not show shipping title in summary
+    // Do not show the shipping title in summary
     let mixin = {
         getShippingMethodTitle: function () {
             return "";
