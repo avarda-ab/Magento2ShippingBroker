@@ -14,10 +14,7 @@ use Magento\Quote\Api\Data\CartInterface;
 interface CustomAttributeBuilderInterface
 {
     /**
-     * Compose attribute key=value string
-     *
-     * @param \Magento\Quote\Api\Data\CartInterface $cart
-     * @return string
+     * Compose attribute key=value string.
      */
     public function build(CartInterface $cart): string;
 }

@@ -19,8 +19,6 @@ class SetShippingMethodPlugin
     }
 
     /**
-     * @param Index $subject
-     * @return void
      * @throws LocalizedException
      * @throws NoSuchEntityException
      */

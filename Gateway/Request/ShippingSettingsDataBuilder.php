@@ -9,10 +9,13 @@ declare(strict_types=1);
 
 namespace Avarda\ShippingBroker\Gateway\Request;
 
-use Magento\Quote\Api\CartRepositoryInterface;
+use Avarda\ShippingBroker\Api\Gateway\Request\CustomAttributeBuilderInterface;
+use Avarda\ShippingBroker\Model\Provider\Pool;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Payment\Gateway\Helper\SubjectReader;
 use Magento\Payment\Gateway\Request\BuilderInterface;
-use Avarda\ShippingBroker\Api\Gateway\Request\CustomAttributeBuilderInterface;
+use Magento\Quote\Api\CartRepositoryInterface;
+use Psr\Log\LoggerInterface;
 
 class ShippingSettingsDataBuilder implements BuilderInterface
 {
@@ -20,14 +23,18 @@ class ShippingSettingsDataBuilder implements BuilderInterface
 
     public const ATTRIBUTES = 'attributes';
 
-    /**
-     * @param CartRepositoryInterface $quoteRepository
-     * @param array $customAttributesPool
-     */
+    protected CartRepositoryInterface $quoteRepository;
+    protected Pool $providerPool;
+    protected LoggerInterface $logger;
+
     public function __construct(
-        protected readonly CartRepositoryInterface $quoteRepository,
-        protected readonly array $customAttributesPool,
+        CartRepositoryInterface $quoteRepository,
+        Pool $providerPool,
+        LoggerInterface $logger
     ) {
+        $this->quoteRepository = $quoteRepository;
+        $this->providerPool = $providerPool;
+        $this->logger = $logger;
     }
 
     /**
@@ -35,7 +42,8 @@ class ShippingSettingsDataBuilder implements BuilderInterface
      */
     public function build(array $buildSubject): array
     {
-        if (0 == count($this->customAttributesPool)) {
+        $customAttributesPool = $this->getCustomAttributesPool();
+        if (count($customAttributesPool) === 0) {
             return [];
         }
 
@@ -48,25 +56,40 @@ class ShippingSettingsDataBuilder implements BuilderInterface
 
         return [
             self::SHIPPING_SETTINGS => [
-                self::ATTRIBUTES => $this->getAttributes($order),
+                self::ATTRIBUTES => $this->getAttributes($order, $customAttributesPool),
             ]
         ];
     }
 
     /**
-     * Render Attributes
+     * Build attribute strings via the active provider's pool.
      *
-     * @param mixed $order
-     * @return array
+     * @param CustomAttributeBuilderInterface[] $customAttributesPool
+     * @return string[]
      */
-    private function getAttributes($order): array
+    private function getAttributes($order, array $customAttributesPool): array
     {
         $customAttributes = [];
-        /** @var CustomAttributeBuilderInterface $customAttributeBuilder */
-        foreach ($this->customAttributesPool as $customAttributeBuilder) {
+        foreach ($customAttributesPool as $customAttributeBuilder) {
             $customAttributes[] = $customAttributeBuilder->build($order);
         }
 
         return $customAttributes;
+    }
+
+    /**
+     * @return CustomAttributeBuilderInterface[]
+     */
+    private function getCustomAttributesPool(): array
+    {
+        try {
+            return $this->providerPool->getActive()->getCustomAttributesPool();
+        } catch (LocalizedException $e) {
+            $this->logger->warning(
+                'Avarda ShippingBroker: cannot resolve active provider for shipping settings.',
+                ['exception' => $e]
+            );
+            return [];
+        }
     }
 }

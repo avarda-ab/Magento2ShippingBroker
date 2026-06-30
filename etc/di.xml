@@ -10,17 +10,7 @@
         <arguments>
             <argument name="httpClient" xsi:type="object">AvardaCheckout3Client</argument>
             <argument name="transferFactory" xsi:type="object">AvardaCheckout3GetPaymentStatusTransferFactory</argument>
-            <argument name="parser" xsi:type="object">Avarda\ShippingBroker\Gateway\Response\GetShippingRateStatusParser</argument>
             <argument name="checkoutSession" xsi:type="object">Magento\Checkout\Model\Session\Proxy</argument>
-        </arguments>
-    </type>
-    <type name="Avarda\ShippingBroker\Gateway\Request\ShippingSettingsDataBuilder">
-        <arguments>
-            <argument name="customAttributesPool" xsi:type="array">
-                <item name="freeshipping" xsi:type="object">Avarda\ShippingBroker\Gateway\Request\CustomAttribute\Nshift\FreeshippingBuilder</item>
-                <item name="discount" xsi:type="object">Avarda\ShippingBroker\Gateway\Request\CustomAttribute\Nshift\DiscountBuilder</item>
-                <item name="weight" xsi:type="object">Avarda\ShippingBroker\Gateway\Request\CustomAttribute\Nshift\WeightBuilder</item>
-            </argument>
         </arguments>
     </type>
     <virtualType name="AvardaCheckout3UpdateItemsRequest">
@@ -51,11 +41,6 @@
         <plugin name="Avarda_ShippingBroker::skip_shipping_item" type="Avarda\ShippingBroker\Plugin\Avarda\PrepareItems\Quote\QuoteCollectTotalsPrepareItems"/>
     </type>
 
-    <type name="Avarda\ShippingBroker\Plugin\Avarda\Gateway\Response\GetOnlyStatusHandler">
-        <arguments>
-            <argument name="parser" xsi:type="object">Avarda\ShippingBroker\Gateway\Response\GetShippingRateStatusParser</argument>
-        </arguments>
-    </type>
     <type name="Avarda\ShippingBroker\Helper\ShippingDetails">
         <arguments>
             <argument name="session" xsi:type="object">Magento\Checkout\Model\Session\Proxy</argument>

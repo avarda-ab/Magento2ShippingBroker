@@ -5,9 +5,7 @@ namespace Avarda\ShippingBroker\Plugin\Avarda\PrepareItems\Quote;
 class QuoteCollectTotalsPrepareItems
 {
     /**
-     * Do not add shipping item to as it is already added by avarda shipping broker
-     *
-     * @return void
+     * Do not add shipping item; it is already added by the Avarda shipping broker.
      */
     public function aroundPrepareShipment(): void
     {

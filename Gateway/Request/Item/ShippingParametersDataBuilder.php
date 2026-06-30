@@ -25,12 +25,16 @@ class ShippingParametersDataBuilder implements BuilderInterface
 
     public const WEIGHT = 'weight';
 
-    private ?StoreConfigInterface $storeConfig = null;
+    protected ProductRepositoryInterface $productRepository;
+    protected StoreConfigManagerInterface $storeConfigManager;
+    protected ?StoreConfigInterface $storeConfig = null;
 
     public function __construct(
-        protected readonly ProductRepositoryInterface $productRepository,
-        protected readonly StoreConfigManagerInterface $storeConfigManager
+        ProductRepositoryInterface $productRepository,
+        StoreConfigManagerInterface $storeConfigManager
     ) {
+        $this->productRepository = $productRepository;
+        $this->storeConfigManager = $storeConfigManager;
     }
 
     /**
@@ -56,11 +60,6 @@ class ShippingParametersDataBuilder implements BuilderInterface
         ];
     }
 
-    /**
-     * Retrieve Store Config
-     *
-     * @return StoreConfigInterface
-     */
     private function getStoreConfig(): StoreConfigInterface
     {
         if (!$this->storeConfig) {
@@ -71,12 +70,6 @@ class ShippingParametersDataBuilder implements BuilderInterface
         return $this->storeConfig;
     }
 
-    /**
-     * Calculate weight in grams from what is currently set in magento
-     *
-     * @param float $weight
-     * @return int
-     */
     public function getWeightInGrams(float $weight): int
     {
         if ($this->getStoreConfig()->getWeightUnit() == 'kgs') {

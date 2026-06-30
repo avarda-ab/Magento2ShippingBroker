@@ -11,11 +11,5 @@ namespace Avarda\ShippingBroker\Api\Gateway\Response;
 
 interface ParserInterface
 {
-    /**
-     * Parse and return data from response
-     *
-     * @param array $response
-     * @return array|bool
-     */
     public function parse(array $response): array|bool;
 }

@@ -9,28 +9,26 @@ declare(strict_types=1);
 
 namespace Avarda\ShippingBroker\Plugin\Avarda\Gateway\Response;
 
-use Avarda\ShippingBroker\Api\Gateway\Response\ParserInterface;
+use Avarda\Checkout3\Gateway\Response\GetOnlyStatusHandler as AvardaGetOnlyStatusHandler;
+use Avarda\ShippingBroker\Model\Provider\Pool;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Payment\Gateway\Helper\SubjectReader;
-use Avarda\Checkout3\Gateway\Response\GetOnlyStatusHandler as AvardaGetOnlyStatusHandler;
 use Magento\Quote\Api\CartRepositoryInterface;
 
 class GetOnlyStatusHandler
 {
+    protected CartRepositoryInterface $quoteRepository;
+    protected Pool $providerPool;
+
     public function __construct(
-        protected readonly CartRepositoryInterface $quoteRepository,
-        protected readonly ParserInterface $parser,
+        CartRepositoryInterface $quoteRepository,
+        Pool $providerPool
     ) {
+        $this->quoteRepository = $quoteRepository;
+        $this->providerPool = $providerPool;
     }
 
     /**
-     * Shipping rates update after Handle request to Avarda
-     *
-     * @param AvardaGetOnlyStatusHandler $subject
-     * @param mixed $result
-     * @param array $handlingSubject
-     * @param array $response
-     * @return void
      * @throws NoSuchEntityException
      */
     public function afterHandle(
@@ -41,7 +39,7 @@ class GetOnlyStatusHandler
     ) {
         $paymentDO = SubjectReader::readPayment($handlingSubject);
         $order = $this->quoteRepository->get($paymentDO->getOrder()->getId());
-        $parsedResponse = $this->parser->parse($response);
+        $parsedResponse = $this->providerPool->getActive()->getResponseParser()->parse($response);
         if (!$parsedResponse) {
             return;
         }
