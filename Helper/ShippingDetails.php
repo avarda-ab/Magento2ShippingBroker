@@ -38,7 +38,7 @@ class ShippingDetails extends Data
         Context $context,
         StoreManagerInterface $storeManager,
         Session $session,
-        UrlInterface $url = null
+        ?UrlInterface $url = null
     ) {
         parent::__construct($context, $storeManager, $url);
         $this->session = $session;
