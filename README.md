@@ -7,7 +7,7 @@ per store scope.
 Install one provider module alongside it:
 
 - [Avarda_ShippingBrokerNshift](https://github.com/avarda-ab/Magento2ShippingBrokerNshift) — nShift / Unifaun
-- [`Avarda_ShippingBrokerPartner`](https://github.com/avarda-ab/Magento2ShippingBrokerPartner) — Magento as Partner Shipping implementor
+- [Avarda_ShippingBrokerPartner](https://github.com/avarda-ab/Magento2ShippingBrokerPartner) — Magento as Partner Shipping implementor
 
 ## Usage
 
