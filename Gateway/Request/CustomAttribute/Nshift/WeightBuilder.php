@@ -11,6 +11,8 @@ namespace Avarda\ShippingBroker\Gateway\Request\CustomAttribute\Nshift;
 
 use Avarda\ShippingBroker\Api\Gateway\Request\CustomAttributeBuilderInterface;
 use Magento\Quote\Api\Data\CartInterface;
+use Magento\Quote\Api\Data\CartItemInterface;
+use Magento\Quote\Model\Quote;
 use Magento\Store\Api\Data\StoreConfigInterface;
 use Magento\Store\Api\StoreConfigManagerInterface;
 
@@ -48,11 +50,27 @@ class WeightBuilder implements CustomAttributeBuilderInterface
     private function getValue(CartInterface $cart): string
     {
         $weight = 0;
-        foreach ($cart->getItems() as $item) {
+        foreach ($this->getItems($cart) as $item) {
             $weight += $this->getWeightInGrams((float) $item->getWeight() * $item->getQty());
         }
 
         return (string) $weight;
+    }
+
+    /**
+     * The quote repository populates the items data key only for active quotes, and a renewed Avarda
+     * purchase is built from an inactive one.
+     *
+     * @return CartItemInterface[]
+     */
+    private function getItems(CartInterface $cart): array
+    {
+        $items = $cart->getItems();
+        if ($items === null && $cart instanceof Quote) {
+            $items = $cart->getAllVisibleItems();
+        }
+
+        return $items ?? [];
     }
 
     /**
