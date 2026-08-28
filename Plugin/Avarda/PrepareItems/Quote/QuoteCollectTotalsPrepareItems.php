@@ -8,9 +8,7 @@ use Magento\Quote\Api\Data\CartInterface;
 class QuoteCollectTotalsPrepareItems
 {
     /**
-     * Do not add shipping item to as it is already added by avarda shipping broker
-     *
-     * @return void
+     * Do not add shipping item; it is already added by the Avarda shipping broker.
      */
     public function aroundPrepareShipment(): void
     {
@@ -23,7 +21,7 @@ class QuoteCollectTotalsPrepareItems
     public function afterGetRoundingTargetTotal(
         PrepareItems $subject,
         float $result,
-        CartInterface $cart
+        CartInterface $cart,
     ): float {
         if ($cart->isVirtual()) {
             return $result;

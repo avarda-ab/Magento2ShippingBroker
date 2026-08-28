@@ -11,7 +11,7 @@ namespace Avarda\ShippingBroker\Model\Carrier;
 
 use Avarda\Checkout3\Api\QuotePaymentManagementInterface;
 use Avarda\Checkout3\Helper\PaymentData;
-use Avarda\ShippingBroker\Api\Gateway\Response\ParserInterface;
+use Avarda\ShippingBroker\Model\Provider\Pool;
 use Magento\CatalogInventory\Api\StockRegistryInterface;
 use Magento\Checkout\Model\Session;
 use Magento\Directory\Helper\Data;
@@ -38,12 +38,12 @@ use Psr\Log\LoggerInterface;
 
 class Avarda extends AbstractCarrierOnline implements CarrierInterface
 {
-    public const string METHOD_CODE = 'shipping_broker';
+    public const METHOD_CODE = 'shipping_broker';
     protected $_code = 'avarda';
     protected $_isFixed = true;
 
     protected ClientInterface $httpClient;
-    protected ParserInterface $parser;
+    protected Pool $providerPool;
     protected PaymentData $paymentDataHelper;
     protected RedirectInterface $redirect;
     protected Session $checkoutSession;
@@ -66,7 +66,7 @@ class Avarda extends AbstractCarrierOnline implements CarrierInterface
         Data $directoryData,
         StockRegistryInterface $stockRegistry,
         ClientInterface $httpClient,
-        ParserInterface $parser,
+        Pool $providerPool,
         PaymentData $paymentDataHelper,
         RedirectInterface $redirect,
         Session $checkoutSession,
@@ -93,7 +93,7 @@ class Avarda extends AbstractCarrierOnline implements CarrierInterface
         );
 
         $this->httpClient = $httpClient;
-        $this->parser = $parser;
+        $this->providerPool = $providerPool;
         $this->paymentDataHelper = $paymentDataHelper;
         $this->redirect = $redirect;
         $this->checkoutSession = $checkoutSession;
@@ -124,11 +124,6 @@ class Avarda extends AbstractCarrierOnline implements CarrierInterface
         return $request;
     }
 
-    /**
-     * Get allowed methods.
-     *
-     * @return array
-     */
     public function getAllowedMethods()
     {
         return [
@@ -137,7 +132,6 @@ class Avarda extends AbstractCarrierOnline implements CarrierInterface
     }
 
     /**
-     * @param $request
      * @return Method
      */
     private function createResultMethod($request)
@@ -161,8 +155,6 @@ class Avarda extends AbstractCarrierOnline implements CarrierInterface
     }
 
     /**
-     * @param $request
-     * @return bool|array
      * @throws \Magento\Payment\Gateway\Http\ClientException
      * @throws \Magento\Payment\Gateway\Http\ConverterException
      */
@@ -193,7 +185,8 @@ class Avarda extends AbstractCarrierOnline implements CarrierInterface
                 'useAltApi' => false
             ]
         ]);
-        return $this->parser->parse($this->httpClient->placeRequest($transfer));
+        return $this->providerPool->getActive()->getResponseParser()
+            ->parse($this->httpClient->placeRequest($transfer));
     }
 
     protected function getQuote()

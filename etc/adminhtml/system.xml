@@ -16,6 +16,12 @@
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                         <config_path>carriers/avarda/active</config_path>
                     </field>
+                    <field id="provider" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Provider</label>
+                        <comment>Selects which shipping broker integration is active. Each provider must be installed as a module.</comment>
+                        <source_model>Avarda\ShippingBroker\Model\Config\Source\Provider</source_model>
+                        <config_path>carriers/avarda/provider</config_path>
+                    </field>
                 </group>
             </group>
         </section>

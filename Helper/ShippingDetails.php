@@ -21,24 +21,7 @@ use Magento\Store\Model\StoreManagerInterface;
 
 class ShippingDetails extends Data
 {
-    /**
-     * @param Context $context
-     * @param StoreManagerInterface $storeManager
-     * @param Session $session
-     * @param UrlInterface|null $url
-     */
-    public function __construct(
-        Context $context,
-        StoreManagerInterface $storeManager,
-        protected readonly Session $session,
-        UrlInterface $url = null
-    ) {
-        parent::__construct($context, $storeManager, $url);
-    }
-
-    /**
-     * @var string[]
-     */
+    protected Session $session;
     protected array $shippingDetailKeys = [
         'name',
         'address1',
@@ -51,11 +34,17 @@ class ShippingDetails extends Data
         'email'
     ];
 
+    public function __construct(
+        Context $context,
+        StoreManagerInterface $storeManager,
+        Session $session,
+        ?UrlInterface $url = null
+    ) {
+        parent::__construct($context, $storeManager, $url);
+        $this->session = $session;
+    }
+
     /**
-     * Retrieve shipping rate details
-     *
-     * @param Order $order
-     * @return array
      * @throws LocalizedException
      * @throws NoSuchEntityException
      */
@@ -77,12 +66,6 @@ class ShippingDetails extends Data
         return [];
     }
 
-    /**
-     * Prepare shipping rate details
-     *
-     * @param array $details
-     * @return array
-     */
     public function parseShippingRateDetails(array $details): array
     {
         $parsedShippingDetails = [];
