@@ -58,19 +58,20 @@ class WeightBuilder implements CustomAttributeBuilderInterface
     }
 
     /**
-     * The quote repository populates the items data key only for active quotes, and a renewed Avarda
-     * purchase is built from an inactive one.
+     * The items data key is a load-time snapshot, so the live items collection is used.
      *
+     * The snapshot is missing for inactive quotes and stale after the cart changes in the same request.
+     *
+     * @param CartInterface $cart
      * @return CartItemInterface[]
      */
     private function getItems(CartInterface $cart): array
     {
-        $items = $cart->getItems();
-        if ($items === null && $cart instanceof Quote) {
-            $items = $cart->getAllVisibleItems();
+        if ($cart instanceof Quote) {
+            return $cart->getAllVisibleItems();
         }
 
-        return $items ?? [];
+        return $cart->getItems() ?? [];
     }
 
     /**
