@@ -14,6 +14,7 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Payment\Gateway\Helper\SubjectReader;
 use Avarda\Checkout3\Gateway\Response\GetOnlyStatusHandler as AvardaGetOnlyStatusHandler;
 use Magento\Quote\Api\CartRepositoryInterface;
+use Magento\Sales\Api\Data\OrderPaymentInterface;
 
 class GetOnlyStatusHandler
 {
@@ -31,7 +32,6 @@ class GetOnlyStatusHandler
      * @param array $handlingSubject
      * @param array $response
      * @return void
-     * @throws NoSuchEntityException
      */
     public function afterHandle(
         AvardaGetOnlyStatusHandler $subject,
@@ -40,12 +40,26 @@ class GetOnlyStatusHandler
         array $response
     ) {
         $paymentDO = SubjectReader::readPayment($handlingSubject);
-        $order = $this->quoteRepository->get($paymentDO->getOrder()->getId());
+        $payment = $paymentDO->getPayment();
+        // For an order payment the adapter id is the order entity id, not the quote id
+        $quoteId = $payment instanceof OrderPaymentInterface
+            ? $payment->getOrder()->getQuoteId()
+            : $paymentDO->getOrder()->getId();
+        if (!$quoteId) {
+            return;
+        }
+
+        try {
+            $quote = $this->quoteRepository->get((int) $quoteId);
+        } catch (NoSuchEntityException $e) {
+            // Quote of an old order may already be cleaned up; the status check itself must not fail because of it
+            return;
+        }
         $parsedResponse = $this->parser->parse($response);
         if (!$parsedResponse) {
             return;
         }
-        $shippingAddress = $order->getShippingAddress();
+        $shippingAddress = $quote->getShippingAddress();
         $rateId = $shippingAddress->getShippingRatesCollection()->getFirstItem()->getId();
         $rate = $shippingAddress->getShippingRateById((int) $rateId);
         if ($rate) {
