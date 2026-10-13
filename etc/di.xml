@@ -20,6 +20,13 @@
             </argument>
         </arguments>
     </virtualType>
+    <virtualType name="AvardaCheckout3ItemBuilder">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="shippingParameters" xsi:type="string">Avarda\ShippingBroker\Gateway\Request\Item\ShippingParametersDataBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
     <virtualType name="AvardaCheckout3InitializePaymentRequest">
         <arguments>
             <argument name="builders" xsi:type="array">
