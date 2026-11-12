@@ -9,16 +9,15 @@ declare(strict_types=1);
 
 namespace Avarda\ShippingBroker\Gateway\Request\Item;
 
+use Avarda\Checkout3\Gateway\Data\ItemAdapter\QuoteItem;
+use Avarda\Checkout3\Gateway\Data\ItemAdapterInterface;
+use Avarda\Checkout3\Gateway\Helper\ItemSubjectReader;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Payment\Gateway\Request\BuilderInterface;
-use Avarda\Checkout3\Gateway\Helper\ItemSubjectReader;
 use Magento\Store\Api\Data\StoreConfigInterface;
 use Magento\Store\Api\StoreConfigManagerInterface;
 
-/**
- * Builder for "shippingParamaters" array in the avarda shipping broker
- */
 class ShippingParametersDataBuilder implements BuilderInterface
 {
     public const SHIPPING_PARAMETERS = 'shippingParameters';
@@ -31,7 +30,7 @@ class ShippingParametersDataBuilder implements BuilderInterface
 
     public function __construct(
         ProductRepositoryInterface $productRepository,
-        StoreConfigManagerInterface $storeConfigManager
+        StoreConfigManagerInterface $storeConfigManager,
     ) {
         $this->productRepository = $productRepository;
         $this->storeConfigManager = $storeConfigManager;
@@ -42,25 +41,36 @@ class ShippingParametersDataBuilder implements BuilderInterface
      */
     public function build(array $buildSubject): array
     {
-        $shippingParameters = [];
         $item = ItemSubjectReader::readItem($buildSubject);
         $qty = (int) ItemSubjectReader::readQty($buildSubject);
-        try {
-            $product = $this->productRepository->get($item->getSku());
-            $shippingParameters[self::WEIGHT] = $this->getWeightInGrams((float) $product->getWeight()) * $qty;
-        } catch (LocalizedException $e) {
-        }
-        if (0 == count($shippingParameters)) {
+        $weight = $this->getItemWeight($item);
+        if ($weight === null) {
             return [];
         }
 
         return [
-            'articleNumber' => mb_substr($item->getSku(), 0, 35),
-            self::SHIPPING_PARAMETERS => $shippingParameters
+            'articleNumber' => mb_substr((string) $item->getSku(), 0, 35),
+            self::SHIPPING_PARAMETERS => [
+                self::WEIGHT => $this->getWeightInGrams($weight) * $qty,
+            ],
         ];
     }
 
-    private function getStoreConfig(): StoreConfigInterface
+    public function getItemWeight(ItemAdapterInterface $item): ?float
+    {
+        // Custom option SKUs are appended to the quote item SKU, so a product lookup by that SKU fails
+        if ($item instanceof QuoteItem) {
+            return (float) $item->getQuoteItem()->getWeight();
+        }
+
+        try {
+            return (float) $this->productRepository->get((string) $item->getSku())->getWeight();
+        } catch (LocalizedException $e) {
+            return null;
+        }
+    }
+
+    public function getStoreConfig(): StoreConfigInterface
     {
         if (!$this->storeConfig) {
             $storeConfigs = $this->storeConfigManager->getStoreConfigs();

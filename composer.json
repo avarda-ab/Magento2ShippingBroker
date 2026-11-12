@@ -1,10 +1,10 @@
 {
     "name": "avarda/shipping-broker",
-    "version": "2.0.1",
+    "version": "2.0.2",
     "description": "Avarda shipping broker handling for Avarda Checkout3",
     "type": "magento2-module",
     "require": {
-        "avarda/checkout3": "*",
+        "avarda/checkout3": ">=1.5.17",
         "magento/module-checkout": "*",
         "magento/module-store": "*",
         "magento/module-quote": "*",
