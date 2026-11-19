@@ -190,7 +190,7 @@ class Avarda extends AbstractCarrierOnline implements CarrierInterface
             "additional" => [
                 'purchaseid' => $purchaseData['purchaseId'],
                 'storeId' => $quote->getStoreId(),
-                'useAltApi' => false
+                'useAltApi' => $purchaseData['useAltApi'] ?? false
             ]
         ]);
         return $this->parser->parse($this->httpClient->placeRequest($transfer));
